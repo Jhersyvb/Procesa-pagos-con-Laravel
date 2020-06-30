@@ -24,8 +24,11 @@ class HomeController extends Controller
     public function index()
     {
         $currencies = \App\Currency::all();
+        $paymentPlatforms = \App\PaymentPlatform::all();
+
         return view('home')->with([
             'currencies' => $currencies,
+            'paymentPlatforms' => $paymentPlatforms,
         ]);
     }
 }
