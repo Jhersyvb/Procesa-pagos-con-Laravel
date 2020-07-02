@@ -23,7 +23,7 @@
                                     class="form-control"
                                     value="{{ mt_rand(500, 100000) / 100 }}"
                                     required
-                                />
+                                >
                                 <small class="form-text text-muted">
                                     Use values with up to two decimal positions, using dot "."
                                 </small>
@@ -53,11 +53,11 @@
                                                     name="payment_platform"
                                                     value="{{ $paymentPlatform->id }}"
                                                     required
-                                                />
+                                                >
                                                 <img
                                                     class="img-thumbnail"
                                                     src="{{ asset($paymentPlatform->image) }}"
-                                                />
+                                                >
                                             </label>
                                         @endforeach
                                     </div>
