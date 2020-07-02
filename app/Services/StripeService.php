@@ -47,6 +47,21 @@ class StripeService
         //
     }
 
+    public function createIntent($value, $currency, $paymentMethod)
+    {
+        return $this->makeRequest(
+            'POST',
+            '/v1/payment_intents',
+            [],
+            [
+                'amount' => round($value * $this->resolveFactor($currency)), // 5.01 => 501
+                'currency' => $currency,
+                'payment_method' => $paymentMethod,
+                'confirmation_method' => 'manual',
+            ]
+        );
+    }
+
     public function resolveFactor($currency)
     {
         $zeroDecimalCurrencies = ['JPY'];
