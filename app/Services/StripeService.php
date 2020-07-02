@@ -55,10 +55,18 @@ class StripeService
             [],
             [
                 'amount' => round($value * $this->resolveFactor($currency)), // 5.01 => 501
-                'currency' => $currency,
+                'currency' => strtolower($currency),
                 'payment_method' => $paymentMethod,
                 'confirmation_method' => 'manual',
             ]
+        );
+    }
+
+    public function confirmPayment($paymentIntentId)
+    {
+        return $this->makeRequest(
+            'POST',
+            "/v1/payment_intents/{$paymentIntentId}/confirm"
         );
     }
 
