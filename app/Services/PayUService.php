@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Traits\ConsumesExternalServices;
 
@@ -56,9 +57,64 @@ class PayUService
         //
     }
 
-    public function createPayment()
+    public function createPayment($value, $currency, $name, $email, $card, $year, $month, $cvc, $network, $installments = 1, $paymentCountry = 'PE')
     {
-        //
+        return $this->makeRequest(
+            'POST',
+            '/payments-api/4.0/service.cgi',
+            [],
+            [
+                'language' => $language = config('app.locale'),
+                'command' => 'SUBMIT_TRANSACTION',
+                'test' => false,
+                'transaction' => [
+                    'type' => 'AUTHORIZATION_AND_CAPTURE',
+                    'paymentMethod' => strtoupper($network),
+                    'paymentCountry' => strtoupper($paymentCountry),
+                    'deviceSessionId' => session()->getId(),
+                    'ipAddress' => request()->ip(),
+                    'userAgent' => request()->header('User-Agent'),
+                    'creditCard' => [
+                        'number' => $card,
+                        'securityCode' => $cvc,
+                        'expirationDate' => "{$year}/{$month}",
+                        'name' => 'APPROVED',
+                    ],
+                    'extraParameters' => [
+                        'INSTALLMENTS_NUMBER' => $installments,
+                    ],
+                    'payer' => [
+                        'fullName' => $name,
+                        'emailAddress' => $email,
+                    ],
+                    'order' => [
+                        'accountId' => $this->accountId,
+                        'referenceCode' => $reference = Str::random(12),
+                        'description' => 'Testing PayU',
+                        'language' => $language,
+                        'signature' => $this->generateSignature($reference, $value = round($value * $this->resolveFactor($currency))),
+                        'additionalValues' => [
+                            'TX_VALUE' => [
+                                'value' => $value,
+                                'currency' => $this->baseCurrency,
+                            ],
+                        ],
+                        'buyer' => [
+                            'fullName' => $name,
+                            'emailAddress' => $email,
+                            'shippingAddress' => [
+                                'street1' => '',
+                                'city' => '',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'Accept' => 'application/json',
+            ],
+            $isJsonRequest = true
+        );
     }
 
     public function resolveFactor($currency)
