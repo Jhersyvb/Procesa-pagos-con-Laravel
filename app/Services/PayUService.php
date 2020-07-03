@@ -30,7 +30,7 @@ class PayUService
         $this->merchantId = config('services.payu.merchant_id');
         $this->key = config('services.payu.key');
         $this->secret = config('services.payu.secret');
-        $this->baseCurrency = config('services.payu.base_currency');
+        $this->baseCurrency = strtoupper(config('services.payu.base_currency'));
 
         $this->converter = $converter;
     }
@@ -66,8 +66,8 @@ class PayUService
         return $this->converter->convertCurrency($currency, $this->baseCurrency);
     }
 
-    public function generateSignature()
+    public function generateSignature($referenceCode, $value)
     {
-        //
+        return md5("{$this->key}~{$this->merchantId}~{$referenceCode}~{$value}~{$this->baseCurrency}");
     }
 }
