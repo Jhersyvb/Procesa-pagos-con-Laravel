@@ -43,7 +43,7 @@ return [
     'payu' => [
         'base_uri' => env('PAYU_BASE_URI'),
         'account_id' => env('PAYU_ACCOUNT_ID'),
-        'merchantId' => 'PAYU_MERCHANT_ID',
+        'merchant_id' => 'PAYU_MERCHANT_ID',
         'key' => env('PAYU_KEY'),
         'secret' => env('PAYU_SECRET'),
         'base_currency' => 'pen',
