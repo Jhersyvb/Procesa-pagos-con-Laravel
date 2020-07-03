@@ -66,17 +66,28 @@
     </script>
 
     <script>
-        function setCardNetwork() {
-            const cardNumber = document.getElementById('cardNumber');
+        document.getElementById('cardNumber').addEventListener('keyup', guessPaymentMethod);
+        document.getElementById('cardNumber').addEventListener('change', guessPaymentMethod);
 
-            mercadoPago.getPaymentMethod(
-                { bin: cardNumber.value.substring(0, 6) },
-                function (status, response) {
-                    const cardNetwork = document.getElementById('cardNetwork');
+        function guessPaymentMethod(event) {
+            let cardNumber = document.getElementById('cardNumber').value;
 
-                    cardNetwork.value = response[0].id;
-                }
-            );
+            if (cardNumber.length >= 6) {
+                let bin = cardNumber.substring(0, 6);
+                mercadoPago.getPaymentMethod({
+                    'bin': bin
+                }, setPaymentMethod);
+            }
+        }
+
+        function setPaymentMethod(status, response) {
+            if (status == 200) {
+                let paymentMethodId = response[0].id;
+                let cardNetwork = document.getElementById('cardNetwork');
+                cardNetwork.value = paymentMethodId;
+            } else {
+                alert(`payment method info error: ${response}`);
+            }
         }
     </script>
 
@@ -94,8 +105,6 @@
                         errors.textContent = response.cause[0].description;
                     } else {
                         const cardToken = document.getElementById('cardToken');
-
-                        setCardNetwork();
 
                         cardToken.value = response.id;
 
