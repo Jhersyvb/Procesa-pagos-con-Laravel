@@ -49,7 +49,44 @@ class PayUService
 
     public function handlePayment(Request $request)
     {
-        //
+        $request->validate([
+            'card' => 'required',
+            'cvc' => 'required',
+            'year' => 'required',
+            'month' => 'required',
+            'network' => 'required',
+            'name' => 'required',
+            'email' => 'required',
+        ]);
+
+        $payment = $this->createPayment(
+            $request->value,
+            $request->currency,
+            $request->name,
+            $request->email,
+            $request->card,
+            $request->cvc,
+            $request->year,
+            $request->month,
+            $request->network
+        );
+
+        if ($payment->transactionResponse->state === 'APPROVED') {
+            $name = $request->name;
+            $amount = $request->value;
+            $currency = strtoupper($request->currency);
+
+            return redirect()->route('home')->with([
+                'success' => [
+                    'payment' => "Thanks, {$name}. We received your {$amount}{$currency} payment.",
+                ],
+            ]);
+
+        }
+
+        return redirect()
+            ->route('home')
+            ->withErrors('We were unable to process your payment. Check your details and try again, please');
     }
 
     public function handleApproval()
@@ -57,7 +94,7 @@ class PayUService
         //
     }
 
-    public function createPayment($value, $currency, $name, $email, $card, $year, $month, $cvc, $network, $installments = 1, $paymentCountry = 'PE')
+    public function createPayment($value, $currency, $name, $email, $card, $cvc, $year, $month, $network, $installments = 1, $paymentCountry = 'PE')
     {
         return $this->makeRequest(
             'POST',

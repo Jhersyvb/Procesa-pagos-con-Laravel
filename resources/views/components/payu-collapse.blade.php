@@ -9,14 +9,12 @@
         <input type="text" name="cvc" class="form-control" placeholder="CVC">
     </div>
 
-    <div class="col-1"></div>
-
     <div class="col-1">
-        <input type="text" name="mont" class="form-control" placeholder="MM">
+        <input type="text" name="month" class="form-control" placeholder="MM">
     </div>
 
-    <div class="col-1">
-        <input type="text" name="year" class="form-control" placeholder="YY">
+    <div class="col-2">
+        <input type="text" name="year" class="form-control" placeholder="YYYY">
     </div>
 
     <div class="col-2">
